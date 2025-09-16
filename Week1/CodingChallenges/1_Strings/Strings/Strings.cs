@@ -112,7 +112,7 @@ namespace StringManipulationChallenge
         public static string StringTrim(string usersStringWithWhiteSpace)
         {
             //throw new NotImplementedException("StringTrim method not implemented.");
-            usersStringWithWhiteSpace.Trim();
+            return usersStringWithWhiteSpace.Trim();
         }
 
         /// <summary>
@@ -125,9 +125,10 @@ namespace StringManipulationChallenge
         /// <param name="firstElement"></param>
         /// <param name="lastElement"></param>
         /// <returns></returns>
-        public static string StringSubstring(string x, int firstElement, int lengthOfSubsring)
+        public static string StringSubstring(string x, int firstElement, int lengthOfSubstring)
         {
-            throw new NotImplementedException("StringSubstring method not implemented.");
+            //throw new NotImplementedException("StringSubstring method not implemented.");
+            return x.Substring(firstElement, lengthOfSubstring)
         }
 
         /// <summary>
