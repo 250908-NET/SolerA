@@ -27,7 +27,7 @@ namespace StringManipulationChallenge
 
             //StringTrim
             Console.WriteLine("\nHocus Pocus!");
-            Console.WriteLine("Spaces be gone:\t" + StringTrim(sentence));
+            Console.WriteLine("Whitespace be gone:\t" + StringTrim(sentence));
 
             Console.WriteLine("\nFor these next parts, I will need an assistant.");
             Console.WriteLine("We have never met before right? right");
@@ -63,7 +63,7 @@ namespace StringManipulationChallenge
             Console.WriteLine("\nAlright, the magic is ready! Rapid Fire mode!");
 
             //StringSubstring
-            Console.WriteLine("\nThe substring created using the info given: " + StringSubstring(sentence, firstElement, lengthOfSubstring));
+            Console.WriteLine("\nSubstring using your favorites: " + StringSubstring(sentence, firstElement, lengthOfSubstring));
 
             //SearchChar
             Console.WriteLine("The character you chose is in position " + SearchChar(sentence, chr));
@@ -112,7 +112,7 @@ namespace StringManipulationChallenge
         public static string StringTrim(string usersStringWithWhiteSpace)
         {
             //throw new NotImplementedException("StringTrim method not implemented.");
-            
+            usersStringWithWhiteSpace.Trim();
         }
 
         /// <summary>
