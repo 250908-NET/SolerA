@@ -14,7 +14,7 @@ namespace StringManipulationChallenge
             //when you call a method, you call it with arguments. The args values are held in a variable.
             Console.WriteLine("Please enter a sentence you would like to be transformed: ");
             string sentence = Console.ReadLine();
-            int lengthOfSentence = sentence.length;
+            int lengthOfSentence = sentence.Length;
 
             Console.WriteLine("Watch the magic happen below:");
             //StrinToUpper 
@@ -151,7 +151,7 @@ namespace StringManipulationChallenge
         {
             //throw new NotImplementedException("SearchChar method not implemented.");
 
-            for (int i = 0; i < userInputString.length; i++)
+            for (int i = 0; i < userInputString.Length; i++)
             {
                 if (charUserWants == userInputString[i])
                     return i;
