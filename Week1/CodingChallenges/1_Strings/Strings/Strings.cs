@@ -97,7 +97,8 @@ namespace StringManipulationChallenge
         /// <returns></returns>       
         public static string StringToLower(string usersString)
         {
-            throw new NotImplementedException("StringToUpper method not implemented.");
+            //throw new NotImplementedException("StringToUpper method not implemented.");
+            return usersString.ToLower();
         }
 
         /// <summary>
@@ -110,7 +111,8 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string StringTrim(string usersStringWithWhiteSpace)
         {
-            throw new NotImplementedException("StringTrim method not implemented.");
+            //throw new NotImplementedException("StringTrim method not implemented.");
+            
         }
 
         /// <summary>
