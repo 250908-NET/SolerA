@@ -14,7 +14,7 @@ namespace StringManipulationChallenge
             //when you call a method, you call it with arguments. The args values are held in a variable.
             Console.WriteLine("Please enter a sentence you would like to be transformed: ");
             string sentence = Console.ReadLine();
-            int lengthOfSentence = sentence.length();
+            int lengthOfSentence = sentence.length;
 
             Console.WriteLine("Watch the magic happen below:");
             //StrinToUpper 
@@ -52,7 +52,7 @@ namespace StringManipulationChallenge
             {
                 do
                 {
-                    Console.WriteLine("What is your second favorite number between 1 and "(lengthOfSentence - firstElement) + "?");
+                    Console.WriteLine("What is your second favorite number between 1 and " + (lengthOfSentence - firstElement) + "?");
                     lengthOfSubstring = Convert.ToInt32(Console.ReadLine());
                 } while (lengthOfSubstring < 1 || (lengthOfSubstring > (lengthOfSentence - firstElement + 1)));
             }
@@ -66,10 +66,16 @@ namespace StringManipulationChallenge
             Console.WriteLine("\nSubstring using your favorites: " + StringSubstring(sentence, firstElement, lengthOfSubstring));
 
             //SearchChar
-            Console.WriteLine("The character you chose is in position " + SearchChar(sentence, chr));
+            Console.Write("The character you chose ");
+            int charIndex = SearchChar(sentence, chr);
+
+            if (charIndex < 0)
+                Console.WriteLine("was stolen by goblins and is not within the string!");
+            else
+                Console.WriteLine("is at position " + charIndex);
 
             //ConcatNames
-            Console.WriteLine("Last, but not least, your full name is..." + ConcatNames(firstName, lastName) + "!");
+                Console.WriteLine("Last, but not least, your full name is..." + ConcatNames(firstName, lastName) + "!");
 
 
             Console.WriteLine("\n\nThank you! Thank you! I will be here all Training!");
@@ -128,7 +134,7 @@ namespace StringManipulationChallenge
         public static string StringSubstring(string x, int firstElement, int lengthOfSubstring)
         {
             //throw new NotImplementedException("StringSubstring method not implemented.");
-            return x.Substring(firstElement, lengthOfSubstring)
+            return x.Substring(firstElement, lengthOfSubstring);
         }
 
         /// <summary>
@@ -143,7 +149,15 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static int SearchChar(string userInputString, char charUserWants)
         {
-            throw new NotImplementedException("SearchChar method not implemented.");
+            //throw new NotImplementedException("SearchChar method not implemented.");
+
+            for (int i = 0; i < userInputString.length; i++)
+            {
+                if (charUserWants == userInputString[i])
+                    return i;
+            }
+
+            return -1;
         }
 
         /// <summary>
@@ -158,7 +172,8 @@ namespace StringManipulationChallenge
         /// <returns></returns>
         public static string ConcatNames(string fName, string lName)
         {
-            throw new NotImplementedException("ConcatNames method not implemented.");
+            //throw new NotImplementedException("ConcatNames method not implemented.");
+            return (fName + " " + lName);
         }
     }//end of program
 }
