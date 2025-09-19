@@ -60,7 +60,7 @@ namespace _9_ClassesChallenge
                 if (!age.HasValue)
                     return $"My name is {firstName} {lastName}.";
                 else
-                    return $"My name is {firstName} {lastName}. My age is {age}";
+                    return $"My name is {firstName} {lastName}. My age is {age}.";
             else
                 if (!age.HasValue)
                 return $"My name is {firstName} {lastName}. My eye color is {eyeColor}.";
