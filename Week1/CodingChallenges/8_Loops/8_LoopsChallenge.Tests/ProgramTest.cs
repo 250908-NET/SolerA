@@ -86,7 +86,7 @@ namespace _8_LoopsChallenge.Tests
             strings[2] = new List<string> { "be", "okay...", "I'm" };
             strings[3] = new List<string> { "sorry.", "You", "can" };
             strings[4] = new List<string> { "rest", "now.", "\n" };
-            Assert.Equal("Tony look at me. We're going to be okay... I'm sorry. You can rest now. \n ", Program.LoopdyLoop(strings));
+            Assert.Equal("Tony look at me. We're going to be okay... I'm sorry. You can rest now. \n", Program.LoopdyLoop(strings));
         }
 
 
