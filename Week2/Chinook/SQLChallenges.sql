@@ -1,6 +1,6 @@
 -- SETUP:
     -- Create a database server (docker)
-        -- docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<password>" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+        -- docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Revature2024" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
     -- Connect to the server (Azure Data Studio / Database extension)
     -- Test your connection with a simple query (like a select)
     -- Execute the Chinook database (to create Chinook resources in your db)
@@ -11,23 +11,23 @@
 
 -- BASIC CHALLENGES
 -- List all customers (full name, customer id, and country) who are not in the USA
-
+SELECT FirstName, LastName, CustomerID, Country FROM Customer WHERE Country != 'USA';
 -- List all customers from Brazil
-    
+SELECT * FROM Customer WHERE Country = 'Brazil';    
 -- List all sales agents
-
+SELECT * FROM Employee WHERE Title = 'Sales Support Agent'; 
 -- Retrieve a list of all countries in billing addresses on invoices
-
+SELECT BillingCountry FROM Invoice;
 -- Retrieve how many invoices there were in 2009, and what was the sales total for that year?
-
-    -- (challenge: find the invoice count sales total for every year using one query)
-
+SELECT Count(InvoiceDate) FROM Invoice WHERE YEAR(InvoiceDate) = 2009;
+-- (challenge: find the invoice count sales total for every year using one query)
+SELECT Year(InvoiceDate) as Year, Count(InvoiceDate) as '# of Invoices', SUM(Total) as 'Total Sales' FROM Invoice GROUP BY Year(InvoiceDate);
 -- how many line items were there for invoice #37
-
+SELECT Count(Quantity) FROM InvoiceLine WHERE InvoiceId = 37;
 -- how many invoices per country? BillingCountry  # of invoices -
-
+Select BillingCountry, Count(*) as '# of Invoices' FROM Invoice GROUP BY BillingCountry;
 -- Retrieve the total sales per country, ordered by the highest total sales first.
-
+Select BillingCountry, SUM(Total) as 'Total Sales' FROM Invoice GROUP BY BillingCountry ORDER BY 'Total Sales' DESC;
 
 -- JOINS CHALLENGES
 -- Every Album by Artist
