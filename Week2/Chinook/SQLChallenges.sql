@@ -31,23 +31,52 @@ Select BillingCountry, SUM(Total) as 'Total Sales' FROM Invoice GROUP BY Billing
 
 -- JOINS CHALLENGES
 -- Every Album by Artist
-
+SELECT Album.*, Artist.Name FROM Album JOIN Artist ON Album.ArtistId = Artist.ArtistID;
 -- All songs of the rock genre
-
+SELECT Track.*, Genre.Name as 'Genre' From Track JOIN Genre ON Track.GenreId = Genre.GenreId WHERE Genre.Name = 'Rock';
 -- Show all invoices of customers from brazil (mailing address not billing)
+SELECT Invoice.* FROM Invoice JOIN Customer ON Invoice.CustomerID = Customer.CustomerID WHERE Country = 'Brazil';
 
 -- Show all invoices together with the name of the sales agent for each one
+SELECT Invoice.*, Employee.LastName, Employee.FirstName
+FROM Invoice 
+JOIN Customer ON Invoice.CustomerId = Customer.CustomerId
+JOIN Employee ON Customer.SupportRepId = Employee.EmployeeId;
 
 -- Which sales agent made the most sales in 2009?
+SELECT Employee.EmployeeId, Employee.LastName, Employee.FirstName, Sum(Invoice.Total) 
+FROM Employee
+JOIN Customer ON Employee.EmployeeID = Customer.SupportRepId
+JOIN Invoice ON Customer.CustomerId = Invoice.CustomerId
+WHERE Year(Invoice.InvoiceDate) = 2009
+GROUP BY Employee.EmployeeId, Employee.LastName, Employee.FirstName;
 
 -- How many customers are assigned to each sales agent?
+SELECT Employee.EmployeeId, Employee.LastName, Employee.FirstName, COUNT(Customer.CustomerId) as 'Assigned Customers'
+FROM Employee
+JOIN Customer ON Employee.EmployeeId = Customer.SupportRepID
+WHERE Employee.Title = 'Sales Support Agent'
+GROUP BY Employee.EmployeeId, Employee.LastName, Employee.FirstName;
 
--- Which track was purchased the most ing 20010?
+-- Which track was purchased the most in 2010?
+SELECT Track.Name, SUM(InvoiceLine.Quantity) as 'Albums Sold'
+FROM InvoiceLine
+JOIN Invoice ON Invoice.InvoiceId = Invoice.InvoiceId
+JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+WHERE Year(Invoice.InvoiceDate) = 2010
+GROUP BY Track.Name
+ORDER BY 'Albums Sold' DESC;
 
 -- Show the top three best selling artists.
+SELECT TOP 3 Artist.Name, SUM(InvoiceLine.Quantity) as 'Albums Sold'
+FROM InvoiceLine
+JOIN Track ON InvoiceLine.TrackId = Track.TrackId
+JOIN Album ON Track.AlbumId = Album.AlbumId
+JOIN Artist ON Album.ArtistId = Artist.ArtistId
+GROUP BY Artist.Name
+ORDER BY 'Albums Sold' DESC;
 
 -- Which customers have the same initials as at least one other customer?
-
 
 
 -- ADVACED CHALLENGES
