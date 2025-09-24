@@ -14,5 +14,26 @@ public class RailwaysDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+
+        modelBuilder.Entity<Stock>()
+            .HasKey(s => new { s.PlayerId, s.CompanyId });
+
+        modelBuilder.Entity<Stock>()
+            .HasOne(s => s.Player)
+            .WithMany(p => p.Shares)
+            .HasForeignKey(s => s.PlayerId);
+
+        modelBuilder.Entity<Stock>()
+            .HasOne(s => s.Company)
+            .WithMany(c => c.Shares)
+            .HasForeignKey(s => s.CompanyId);
+
+        modelBuilder.Entity<Player>().HasData(new Player
+        {
+            Id = -1,
+            Username = "Bank",
+            Money = 999999999
+        });
     }
 }
