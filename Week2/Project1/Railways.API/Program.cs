@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Railways.Data;
 using Railways.Models;
+using Railways.Services;
+using Railways.Repositories;
+using Serilog;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<RailwaysDbContext>(options => options.UseSqlServer(CS));
+
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<IStockRepository, StockRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 var app = builder.Build();
 
@@ -30,6 +41,11 @@ app.UseHttpsRedirection();
 app.MapGet("/", () =>
 {
     return "Hello World";
+});
+
+app.MapGet("/players", async (IStudentService service) =>
+{
+    Results.Ok(await service.GetAllASync());
 });
 
 app.Run();
