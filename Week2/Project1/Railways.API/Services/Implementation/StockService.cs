@@ -15,7 +15,7 @@ namespace Railways.Services
         {
             return await _repo.GetAllAsync();
         }
-        public async Task<Stock?> GetByIdsAsync(int playerId, int companyId)
+        public async Task<Stock> GetByIdsAsync(int playerId, int companyId)
         {
             return await _repo.GetByIdsAsync(playerId, companyId);
         }

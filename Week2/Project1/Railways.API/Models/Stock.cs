@@ -5,6 +5,7 @@ namespace Railways.Models;
 
 public class Stock
 {
+    public int Id{ get; set; }
     public int PlayerId { get; set; }
     public Player Player { get; set; }
 

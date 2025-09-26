@@ -62,7 +62,6 @@ namespace Railways.Services
             var player = await _playerRepo.GetByIdAsync(playerId);
             var company = await _companyRepo.GetByIdAsync(companyId);
             var bankStock = await _stockRepo.GetByIdsAsync(-1, companyId); // bank
-            var treasuryStock = await _stockRepo.GetByIdsAsync(company.Id, companyId); // treasury
 
             if (player == null || company == null) return false;
 
@@ -71,25 +70,34 @@ namespace Railways.Services
 
             if (player.Money < totalCost) return false;
 
+            // Check ownership cap: no more than 60% of total shares
+            var playerStock = await _stockRepo.GetByIdsAsync(player.Id, company.Id);
+            int alreadyOwned = playerStock?.SharesOwned ?? 0;
+            if (alreadyOwned + shares > company.TotalShares * 0.6)
+            {
+                return false; // would exceed ownership cap
+            }
+
             // Prefer buying from bank first
             if (bankStock != null && bankStock.SharesOwned >= shares)
             {
                 bankStock.SharesOwned -= shares;
+                await _stockRepo.UpdateAsync(bankStock);
             }
-            else if (treasuryStock != null && treasuryStock.SharesOwned >= shares)
+            else if (company.TreasuryShares >= shares)
             {
-                treasuryStock.SharesOwned -= shares;
+                // Buy from treasury
                 company.Money += totalCost;
             }
             else
             {
-                return false; // not enough shares
+                return false; // not enough shares available
             }
 
-            // Deduct money, add stock
+            // Deduct money from player
             player.Money -= totalCost;
 
-            var playerStock = await _stockRepo.GetByIdsAsync(player.Id, company.Id);
+            // Add stock to player
             if (playerStock == null)
             {
                 playerStock = new Stock
@@ -98,29 +106,20 @@ namespace Railways.Services
                     CompanyId = company.Id,
                     SharesOwned = shares
                 };
-
-                var existing = await _stockRepo.GetByIdsAsync(player.Id, company.Id);
-                if (existing == null)
-                {
-                    await _stockRepo.AddAsync(playerStock);
-                }
-                else
-                {
-                    existing.SharesOwned = playerStock.SharesOwned;
-                    await _stockRepo.UpdateAsync(existing);
-                }
+                await _stockRepo.AddAsync(playerStock);
             }
             else
             {
                 playerStock.SharesOwned += shares;
+                await _stockRepo.UpdateAsync(playerStock);
             }
 
-            // Move stock price down for buys
-            if (company.StockPriceIndex > 0)
-                company.StockPriceIndex--;
+            await _companyRepo.UpdateAsync(company);
+            await _playerRepo.UpdateAsync(player);
 
             return true;
         }
+
 
         // Sell shares (always to bank)
         public async Task<bool> SellSharesAsync(int playerId, int companyId, int shares)
@@ -184,22 +183,19 @@ namespace Railways.Services
             var player = await _playerRepo.GetByIdAsync(playerId);
             var company = await _companyRepo.GetByIdAsync(companyId);
 
+            if (player.Money < initialStockPrice)
+                return false;
+
             if (player == null || company == null) return false;
             if (company.PresidentId != null) return false; // already IPO’d
 
-            // Set initial stock price
-            company.StockPriceIndex = StockMarket.GetClosestIndex(initialStockPrice / 2);
+            // Set initial stock price (use /2 here if that's your game rule)
+            company.StockPriceIndex = StockMarket.GetClosestIndex(initialStockPrice);
 
             // Assign president
             company.PresidentId = player.Id;
 
-            // Give president’s 2 shares
-            var treasuryStock = await _stockRepo.GetByIdsAsync(company.Id, company.Id);
-            if (treasuryStock != null && treasuryStock.SharesOwned >= 2)
-            {
-                treasuryStock.SharesOwned -= 2;
-            }
-
+            // Give president’s 2-share certificate
             var playerStock = await _stockRepo.GetByIdsAsync(player.Id, company.Id);
             if (playerStock == null)
             {
@@ -209,25 +205,22 @@ namespace Railways.Services
                     CompanyId = company.Id,
                     SharesOwned = 2
                 };
-                var existing = await _stockRepo.GetByIdsAsync(player.Id, company.Id);
-                if (existing == null)
-                {
-                    await _stockRepo.AddAsync(playerStock);
-                }
-                else
-                {
-                    existing.SharesOwned = playerStock.SharesOwned;
-                    await _stockRepo.UpdateAsync(existing);
-                }
+                player.Money -= initialStockPrice;
+                company.Money += initialStockPrice;
 
+                await _stockRepo.AddAsync(playerStock);
             }
-            else
-            {
-                playerStock.SharesOwned += 2;
-            }
+
+            
+            
+
+            // Save updates
+            await _companyRepo.UpdateAsync(company);
+            await _playerRepo.UpdateAsync(player);
 
             return true;
         }
+
 
         // Merge two minors into one major
         public async Task<Company?> MergeCompaniesAsync(int playerId, int companyId1, int companyId2, string majorCompanyName)

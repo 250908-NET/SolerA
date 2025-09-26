@@ -8,10 +8,15 @@ namespace Railways.Services
     public class CompanyService : ICompanyService
     {
         private readonly ICompanyRepository _repo;
+        private readonly IStockRepository _stockRepo;
+        private readonly IPlayerRepository _playerRepo;
 
-        public CompanyService(ICompanyRepository repo)
+
+        public CompanyService(ICompanyRepository repo, IStockRepository stockRepo, IPlayerRepository playerRepo)
         {
             _repo = repo;
+            _stockRepo = stockRepo;
+            _playerRepo = playerRepo;
         }
 
         // --- Queries ---
@@ -49,7 +54,7 @@ namespace Railways.Services
         {
             var company = await _repo.GetByIdAsync(companyId);
             if (company == null) return false;
-            
+
             int stockPrice = StockMarket.Track[company.StockPriceIndex];
 
             // Adjust stock price based on payout size
@@ -62,9 +67,30 @@ namespace Railways.Services
                 company.StockPriceIndex = StockMarket.MoveUp(company.StockPriceIndex, 1);
             }
 
+            // Calculate per-share payout
+            int perShare = totalRevenue / company.TotalShares;
+
+            // 1. Pay all stockholders
+            var stocks = await _stockRepo.GetByCompanyIdAsync(companyId);
+            foreach (var stock in stocks)
+            {
+
+                var player = await _playerRepo.GetByIdAsync(stock.PlayerId);
+                if (player != null && stock.SharesOwned > 0)
+                {
+                    player.Money += perShare * stock.SharesOwned;
+                    await _playerRepo.UpdateAsync(player);
+                }
+            }
+
+            // 2. Pay company for treasury shares
+            int treasuryPayout = company.TreasuryShares * perShare;
+            company.Money += treasuryPayout;
+
             await _repo.UpdateAsync(company);
             return true;
         }
+
 
         public async Task<bool> WithholdAsync(int companyId, int totalRevenue)
         {

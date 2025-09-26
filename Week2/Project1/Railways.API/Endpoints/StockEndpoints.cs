@@ -8,16 +8,35 @@ public static class StockEndpoints
     {
         var group = routes.MapGroup("/stocks");
 
-        group.MapPost("/buy", async (int playerId, int companyId, int shares, IPlayerService service) =>
+        // ----------------- Stock Queries -----------------
+
+        group.MapGet("/get-all", async (IStockService service) =>
+            await service.GetAllAsync());
+
+        group.MapGet("/player/{playerId:int}", async (int playerId, IStockService service) =>
+            await service.GetByPlayerIdAsync(playerId));
+
+        group.MapGet("/company/{companyId:int}", async (int companyId, IStockService service) =>
+            await service.GetByCompanyIdAsync(companyId));
+
+        group.MapGet("/{playerId:int}/{companyId:int}", async (int playerId, int companyId, IStockService service) =>
         {
-            var success = await service.BuySharesAsync(playerId, companyId, shares);
-            return success ? Results.Ok("✅ Purchase successful.") : Results.BadRequest("❌ Purchase failed.");
+            var stock = await service.GetByIdsAsync(playerId, companyId);
+            return stock is not null ? Results.Ok(stock) : Results.NotFound();
         });
 
-        group.MapPost("/sell", async (int playerId, int companyId, int shares, IPlayerService service) =>
+        // ----------------- Stock Mutations -----------------
+
+        group.MapPost("/add-or-update", async (int playerId, int companyId, int sharesOwned, IStockService service) =>
         {
-            var success = await service.SellSharesAsync(playerId, companyId, shares);
-            return success ? Results.Ok("✅ Sell successful.") : Results.BadRequest("❌ Sell failed.");
+            var result = await service.AddOrUpdateAsync(playerId, companyId, sharesOwned);
+            return result ? Results.Ok() : Results.BadRequest("Unable to add or update stock");
+        });
+
+        group.MapDelete("{playerId:int}/{companyId:int}/delete", async (int playerId, int companyId, IStockService service) =>
+        {
+            var deleted = await service.DeleteAsync(playerId, companyId);
+            return deleted ? Results.Ok() : Results.NotFound();
         });
 
         return group;

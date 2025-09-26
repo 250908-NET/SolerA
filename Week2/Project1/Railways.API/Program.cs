@@ -5,6 +5,7 @@ using Railways.Services;
 using Railways.Repositories;
 using Serilog;
 using Railways.API.Endpoints;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,11 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,3 +50,5 @@ app.MapCompanyEndpoints();
 app.MapStockEndpoints();
 
 app.Run();
+
+public partial class Program { }
