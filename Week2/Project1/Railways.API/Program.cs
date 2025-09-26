@@ -4,6 +4,7 @@ using Railways.Models;
 using Railways.Services;
 using Railways.Repositories;
 using Serilog;
+using Railways.API.Endpoints;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,14 +39,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () =>
-{
-    return "Hello World";
-});
-
-app.MapGet("/players", async (IPlayerService service) =>
-{
-    Results.Ok(await service.GetAllAsync());
-});
+app.MapPlayerEndpoints();
+app.MapCompanyEndpoints();
+app.MapStockEndpoints();
 
 app.Run();
