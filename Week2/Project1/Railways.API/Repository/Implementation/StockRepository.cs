@@ -18,20 +18,42 @@ namespace Railways.Repositories
            return await _context.Stocks.ToListAsync();
         }
 
-        public async Task<Stock?> GetByIdAsync(int id)
-        {
-            //return await _context.Stocks.Where( Stock => Stock.id  == id);
-            throw new NotImplementedException();
-        }
+        public async Task<Stock?> GetByIdsAsync(int playerId, int companyId) =>
+            await _context.Stocks
+                .FirstOrDefaultAsync(s => s.PlayerId == playerId && s.CompanyId == companyId);
 
+        public async Task<List<Stock>> GetByPlayerIdAsync(int playerId) =>
+            await _context.Stocks
+                .Include(s => s.Company)
+                .Where(s => s.PlayerId == playerId)
+                .ToListAsync();
+        
+        public async Task<List<Stock>> GetByCompanyIdAsync(int companyId) =>
+            await _context.Stocks
+                .Include(s => s.Player)
+                .Where(s => s.CompanyId == companyId)
+                .ToListAsync();
+        public async Task UpdateAsync(Stock stock)
+        {
+            _context.Stocks.Update(stock);
+            await _context.SaveChangesAsync();
+        }
         public async Task AddAsync(Stock stock)
         {
             await _context.Stocks.AddAsync(stock);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task SaveChangesAsync()
+        public async Task DeleteAsync(int playerId, int companyId)
         {
-            await _context.SaveChangesAsync();
+            var stock = await _context.Stocks
+                .FirstOrDefaultAsync(s => s.PlayerId == playerId && s.CompanyId == companyId);
+
+            if (stock != null)
+            {
+                _context.Stocks.Remove(stock);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Railways.Repositories
         public Task<List<Player>> GetAllAsync();
         public Task<Player?> GetByIdAsync(int id);
         public Task AddAsync(Player player);
-        public Task SaveChangesAsync();
+        public Task UpdateAsync(Player player);
+        public Task DeleteAsync(int id);
     }
 }

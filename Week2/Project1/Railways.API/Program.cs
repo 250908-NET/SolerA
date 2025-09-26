@@ -43,9 +43,9 @@ app.MapGet("/", () =>
     return "Hello World";
 });
 
-app.MapGet("/players", async (IStudentService service) =>
+app.MapGet("/players", async (IPlayerService service) =>
 {
-    Results.Ok(await service.GetAllASync());
+    Results.Ok(await service.GetAllAsync());
 });
 
 app.Run();

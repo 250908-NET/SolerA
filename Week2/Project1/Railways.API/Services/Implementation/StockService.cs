@@ -1,27 +1,77 @@
 using Railways.Models;
+using Railways.Repositories;
 
 namespace Railways.Services
 {
     public class StockService : IStockService
     {
-        private readonly IStockRepoository _repo;
-        public StockService()
+        private readonly IStockRepository _repo;
+        public StockService(IStockRepository repo)
         {
-            _repo = _repo;
+            _repo = repo;
         }
 
-        public async Task<List<Stock>> GetAllASync()
+        public async Task<List<Stock>> GetAllAsync()
         {
-            await _repo.GetAllAsync();
+            return await _repo.GetAllAsync();
         }
-        public async Task<Stock?> GetByIdAsync(int id)
+        public async Task<Stock?> GetByIdsAsync(int playerId, int companyId)
         {
-            await _repo.GetByIdAsync(id);
+            return await _repo.GetByIdsAsync(playerId, companyId);
         }
-        public async Task CreateAsync(Stock stock)
+        public async Task<List<Stock>> GetByPlayerIdAsync(int playerId)
         {
-            await _repo.AddAsync(stock);
-            await _repo.SaveChangesAsync();
+            return await _repo.GetByPlayerIdAsync(playerId);
+        }
+
+        public async Task<List<Stock>> GetByCompanyIdAsync(int companyId)
+        {
+            return await _repo.GetByCompanyIdAsync(companyId);
+        }
+
+        public async Task<bool> AddOrUpdateAsync(int playerId, int companyId, int sharesOwned)
+        {
+            var stock = await _repo.GetByIdsAsync(playerId, companyId);
+
+            if (stock == null)
+            {
+                if (sharesOwned <= 0)
+                    return false; // nothing to add
+
+                stock = new Stock
+                {
+                    PlayerId = playerId,
+                    CompanyId = companyId,
+                    SharesOwned = sharesOwned
+                };
+                await _repo.AddAsync(stock);
+            }
+            else
+            {
+                stock.SharesOwned = sharesOwned;
+
+                // if shares go to zero, delete instead of updating
+                if (sharesOwned <= 0)
+                {
+                    await _repo.DeleteAsync(playerId, companyId);
+                }
+                else
+                {
+                    await _repo.UpdateAsync(stock);
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int playerId, int companyId)
+        {
+            var stock = await _repo.GetByIdsAsync(playerId, companyId);
+            if (stock == null)
+                return false;
+
+            await _repo.DeleteAsync(playerId, companyId);
+            return true;
         }
     }
 

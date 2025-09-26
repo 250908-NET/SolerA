@@ -21,12 +21,12 @@ public class RailwaysDbContext : DbContext
 
         modelBuilder.Entity<Stock>()
             .HasOne(s => s.Player)
-            .WithMany(p => p.Shares)
+            .WithMany(p => p.Stocks)
             .HasForeignKey(s => s.PlayerId);
 
         modelBuilder.Entity<Stock>()
             .HasOne(s => s.Company)
-            .WithMany(c => c.Shares)
+            .WithMany(c => c.Stocks)
             .HasForeignKey(s => s.CompanyId);
 
         modelBuilder.Entity<Player>().HasData(new Player

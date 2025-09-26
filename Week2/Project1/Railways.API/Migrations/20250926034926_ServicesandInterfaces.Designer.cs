@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Railways.Data;
 
@@ -10,9 +11,11 @@ using Railways.Data;
 namespace Railways.API.Migrations
 {
     [DbContext(typeof(RailwaysDbContext))]
-    partial class RailwaysDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250926034926_ServicesandInterfaces")]
+    partial class ServicesandInterfaces
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
