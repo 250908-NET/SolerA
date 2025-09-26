@@ -210,8 +210,6 @@ namespace Railways.Services
 
                 await _stockRepo.AddAsync(playerStock);
             }
-
-            
             
 
             // Save updates
@@ -236,7 +234,8 @@ namespace Railways.Services
                 Name = majorCompanyName,
                 Money = company1.Money + company2.Money,
                 StockPriceIndex = (company1.StockPriceIndex + company2.StockPriceIndex) / 2,
-                PresidentId = player.Id
+                PresidentId = player.Id,
+                TotalShares = company1.TotalShares + company2.TotalShares
             };
 
             await _companyRepo.AddAsync(mergedCompany);
